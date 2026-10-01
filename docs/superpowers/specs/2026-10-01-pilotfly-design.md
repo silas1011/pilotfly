@@ -88,13 +88,24 @@ Report format: EdgeTX "Classic Joystick", 8 axes with 11 bit resolution and 24 b
 | Right stick vertical (pitch) | 2 | Y |
 | Left stick vertical (throttle) | 3 | Z |
 | Left stick horizontal (yaw) | 4 | X rotation |
-| Arm switch | 5 | Y rotation |
-| Flight mode switch | 6 | Z rotation |
-| Dial S1 | 7 | per EdgeTX mapping |
-| Dial S2 | 8 | per EdgeTX mapping |
-| Remaining 4 switches, 8 trim buttons, 4 spare | 9 to 32 | Buttons 1 to 24 |
+| SE, 3 positions, arm | 5 | Y rotation |
+| SB, 3 positions, flight mode (Acro, Angle, 3D) | 6 | Z rotation |
+| Dial S1 | 7 | Slider |
+| Dial S2 | 8 | Dial |
+| SA, 2 positions | 9 | Button 1 |
+| SC, 3 positions | 10 to 11 | Buttons 2 to 3 |
+| SD, 2 positions | 12 | Button 4 |
+| SF, 3 positions | 13 to 14 | Buttons 5 to 6 |
+| 4 trims, 2 buttons each | 15 to 22 | Buttons 7 to 14 |
+| Spare | 23 to 32 | Buttons 15 to 24 |
 
-Which physical switch is arm and which is mode, and the number of positions of each switch, come from the official TX12 documentation during the build.
+Switch types are taken from the TX12 Mark II quick start guide and the EdgeTX hardware definition `tx12mk2.json`: SA and SD are 2 position buttons, SB, SC, SE and SF are 3 position switches. That SA and SD are momentary is unconfirmed.
+
+A switch on buttons with P positions uses P - 1 buttons. No button pressed is the lowest position, the highest pressed button gives the position.
+
+A channel above centre means the button is pressed, as in EdgeTX.
+
+Uncrashed reads 8 axes and 20 buttons since update 2.3, so buttons 21 to 24 are sent but have no effect in the game. They are spare buttons.
 
 The user installs the vJoy driver once. Windows lists the device as "vJoy Device". Faking the TX12 device name would need a custom driver and is out of scope.
 
@@ -103,7 +114,7 @@ The user installs the vJoy driver once. Windows lists the device as "vJoy Device
 Dear ImGui with GLFW, one window:
 
 - Start/Stop button for brain and controller.
-- Drawn TX12: sticks move, switches flip, dials turn, trim buttons light up. Controls that changed recently are highlighted. The 4 spare buttons are lamps.
+- Drawn TX12: sticks move, switches flip, dials turn, trim buttons light up. Controls that changed recently are highlighted. The spare buttons are lamps.
 - Status line: vJoy state, brain state, game window state, measured loop rate.
 
 Not included: a live brain activity view.

@@ -1,6 +1,7 @@
 runtime/build/
 cmake-build-*/
 .idea/
+.cache/
 .DS_Store
 __pycache__/
 *.onnx
