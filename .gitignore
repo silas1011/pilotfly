@@ -4,4 +4,8 @@ cmake-build-*/
 .cache/
 .DS_Store
 __pycache__/
-*.onnx
+.venv/
+training/data/
+training/out/
+*.egg-info/
+.pytest_cache/

@@ -13,6 +13,7 @@ public:
     BrainStatus load() override;
     void reset() override;
     ChannelValues step(double dtSeconds) override;
+    double preferredRateHz() const override;
 
     int activeChannel() const;
 

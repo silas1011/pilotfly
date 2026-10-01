@@ -93,6 +93,14 @@ Config parseConfig(const std::string& text) {
             if (number && *number >= 10 && *number <= 1000) {
                 config.rateHz = *number;
             }
+        } else if (key == "game_window") {
+            if (!value.empty()) {
+                config.gameWindow = value;
+            }
+        } else if (key == "brain_file") {
+            if (!value.empty()) {
+                config.brainFile = value;
+            }
         }
     }
     return config;

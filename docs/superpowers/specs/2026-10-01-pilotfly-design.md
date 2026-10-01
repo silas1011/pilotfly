@@ -144,3 +144,18 @@ The Pause key by default, changeable in `pilotfly.ini`. It works while Uncrashed
 - DNg02 descending neurons: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9206711/
 - Lobula plate tangential cells: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6261601/
 - EdgeTX joystick report: https://manual.edgetx.org/edgetx-how-to/joystick-mapping-information-for-game-developers
+
+## As built: brain, training and Uncrashed tools
+
+Changes and details decided while building sub-projects 2 and 3.
+
+- Model contract between training and runtime: `brain.onnx`, opset 17, input `frame` float32 [1, 1, 64, 128] (whole game picture, grayscale 0 to 1), input `state` float32 [1, S] starting at zero, output `channels` [1, 32], output `state_out` [1, S]. One step is 1/50 s. The rate is stored in the model metadata.
+- Eye: the flyvis network is rewritten as a convolution on the hexagon grid (65 cell types, 31 x 31 grid, 13 x 13 kernel). It gives the same numbers as flyvis to about 1e-6. Training uses a sparse matrix version of the same computation because it is faster.
+- The right eye gets a mirrored picture half, so that front-to-back motion excites the same cell types in both eyes.
+- Flight circuit from FlyWire v783: 2384 neurons (145 tangential cells, 1414 intermediate, 825 descending), 36098 connections with 5 or more synapses, 886 cell types. The connection table with signs comes from the repository of Shiu et al. because Zenodo was not reachable.
+- Connection weights are the signed synapse counts, scaled per receiving neuron so that the inputs inside the circuit sum to about 1. Without that scaling almost no signal reached the descending neurons.
+- Junction from eye to circuit: HS cells listen to T4a/T5a, H1 and H2 to T4b/T5b, VS cells to T4d/T5d, other tangential cells to all four directions. The spatial weighting is learned.
+- Own simulator: batched quadcopter physics with acro and angle mode, an arm switch that only arms at low throttle, ground, pillars and sky rendered by ray casting. Thrust to weight ratio, drag, camera tilt, field of view, textures and lighting are randomised.
+- Stage C uses an evolution strategy instead of gradient learning, because the game gives no reward signal. The score of a flight is the time with a moving picture. The Python tool talks to vJoy and captures the screen itself, so no bridge to the C++ program is needed.
+- The C++ program captures the game by copying the window area from the screen (GDI). This works for windowed and borderless mode only.
+- ONNX Runtime with DirectML is used on Windows, with a fallback to the CPU.

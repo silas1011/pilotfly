@@ -1,0 +1,29 @@
+[project]
+name = "pilotfly-train"
+version = "0.1.0"
+description = "Training code for PilotFly, a fruit fly brain model that flies a drone"
+requires-python = ">=3.10"
+dependencies = [
+    "torch>=2.5",
+    "numpy",
+    "pandas",
+    "pyarrow",
+    "requests",
+    "onnx",
+    "onnxruntime",
+    "mss",
+]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+eye = ["flyvis"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["pilotfly_train", "pilotfly_train.uncrashed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

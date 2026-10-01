@@ -18,6 +18,8 @@ struct Config {
     StopKey stopKey;
     int vjoyDevice = 1;
     double rateHz = 100.0;
+    std::string gameWindow = "Uncrashed";
+    std::string brainFile = "brain.onnx";
 };
 
 std::optional<StopKey> parseStopKey(const std::string& text);

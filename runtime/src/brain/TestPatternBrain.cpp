@@ -20,6 +20,10 @@ void TestPatternBrain::reset() {
     time_ = 0.0;
 }
 
+double TestPatternBrain::preferredRateHz() const {
+    return 0.0;
+}
+
 int TestPatternBrain::activeChannel() const {
     return static_cast<int>(time_ / secondsPerChannel_) % kChannelCount;
 }

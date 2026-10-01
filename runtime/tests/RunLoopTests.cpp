@@ -25,6 +25,7 @@ public:
         channels.fill(1.0f);
         return channels;
     }
+    double preferredRateHz() const override { return 0.0; }
 };
 
 class BrokenSink : public IControllerSink {

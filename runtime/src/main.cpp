@@ -1,5 +1,7 @@
 #include <cstdio>
 #include <filesystem>
+#include <memory>
+#include <system_error>
 
 #include <GLFW/glfw3.h>
 #include <imgui.h>
@@ -8,7 +10,9 @@
 
 #include "app/Config.h"
 #include "app/RunLoop.h"
+#include "brain/OnnxBrain.h"
 #include "brain/TestPatternBrain.h"
+#include "capture/FrameSourceFactory.h"
 #include "controller/SinkFactory.h"
 #include "core/Tx12Layout.h"
 #include "input/StopKeyFactory.h"
@@ -17,8 +21,13 @@
 int main(int, char** argv) {
     using namespace pilotfly;
 
-    const std::filesystem::path configPath = std::filesystem::path(argv[0]).parent_path() / "pilotfly.ini";
+    const std::filesystem::path programFolder = std::filesystem::path(argv[0]).parent_path();
+    const std::filesystem::path configPath = programFolder / "pilotfly.ini";
     const Config config = loadConfig(configPath.string());
+    std::filesystem::path brainPath(config.brainFile);
+    if (!brainPath.is_absolute()) {
+        brainPath = programFolder / brainPath;
+    }
 
     if (!glfwInit()) {
         std::fprintf(stderr, "Could not start GLFW\n");
@@ -55,10 +64,20 @@ int main(int, char** argv) {
 
     {
         const Tx12Layout& layout = tx12Layout();
-        TestPatternBrain brain(layout);
+        const auto frames = makeFrameSource(config);
+        std::unique_ptr<IBrain> brain;
+        std::error_code brainFileError;
+        if (std::filesystem::is_regular_file(brainPath, brainFileError)) {
+            brain = std::make_unique<OnnxBrain>(brainPath.string(), *frames);
+            brain->load();
+        } else {
+            brain = std::make_unique<TestPatternBrain>(layout);
+        }
+        const double brainRateHz = brain->preferredRateHz();
+        const double rateHz = brainRateHz > 0.0 ? brainRateHz : config.rateHz;
         const auto sink = makeControllerSink(config);
         const auto stopKey = makeStopKey(config.stopKey, window);
-        RunLoop runLoop(brain, *sink, layout, config.rateHz);
+        RunLoop runLoop(*brain, *sink, layout, rateHz);
         const bool stopKeyOnWorker = stopKey->usableFromAnyThread();
         if (stopKeyOnWorker) {
             runLoop.setWorkerStopKey(stopKey.get());

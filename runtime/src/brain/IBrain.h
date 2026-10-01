@@ -18,6 +18,7 @@ public:
     virtual BrainStatus load() = 0;
     virtual void reset() = 0;
     virtual ChannelValues step(double dtSeconds) = 0;
+    virtual double preferredRateHz() const = 0;
 };
 
 }

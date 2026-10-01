@@ -26,6 +26,20 @@ TEST_CASE("an empty config uses the defaults") {
     REQUIRE(config.stopKey == StopKey{StopKeyKind::Pause, 0});
     REQUIRE(config.vjoyDevice == 1);
     REQUIRE(config.rateHz == 100.0);
+    REQUIRE(config.gameWindow == "Uncrashed");
+    REQUIRE(config.brainFile == "brain.onnx");
+}
+
+TEST_CASE("the game window and brain file are read") {
+    const Config config = parseConfig("game_window = Uncrashed : FPV Drone Simulator \nBRAIN_FILE=C:/brains/My Fly.onnx\n");
+    REQUIRE(config.gameWindow == "Uncrashed : FPV Drone Simulator");
+    REQUIRE(config.brainFile == "C:/brains/My Fly.onnx");
+}
+
+TEST_CASE("empty game window and brain file keep the defaults") {
+    const Config config = parseConfig("game_window =\nbrain_file =   \n");
+    REQUIRE(config.gameWindow == "Uncrashed");
+    REQUIRE(config.brainFile == "brain.onnx");
 }
 
 TEST_CASE("config values are read") {
